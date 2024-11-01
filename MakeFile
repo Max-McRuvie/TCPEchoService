@@ -1,0 +1,58 @@
+# Compiler and flags
+CC = gcc
+CFLAGS = -Wall -g
+
+# Directories
+BUILD_DIR = build
+CLIENT_DIR = client
+SERVER_DIR = server
+
+# Subdirectories for object files and executables
+CLIENT_BUILD_DIR = $(BUILD_DIR)/client
+SERVER_BUILD_DIR = $(BUILD_DIR)/server
+
+# Source and header files
+CLIENT_SRCS = $(CLIENT_DIR)/src/main.c 
+SERVER_SRCS = $(SERVER_DIR)/src/main.c 
+
+CLIENT_INCS = -I$(CLIENT_DIR)/inc -I$(SHARED_DIR)/inc
+SERVER_INCS = -I$(SERVER_DIR)/inc -I$(SHARED_DIR)/inc
+
+# Object files in the respective build subdirectories
+CLIENT_OBJS = $(patsubst %.c, $(CLIENT_BUILD_DIR)/%.o, $(notdir $(CLIENT_SRCS)))
+SERVER_OBJS = $(patsubst %.c, $(SERVER_BUILD_DIR)/%.o, $(notdir $(SERVER_SRCS)))
+
+# Executables in the respective build subdirectories
+CLIENT_EXEC = $(CLIENT_BUILD_DIR)/client_app.exe
+SERVER_EXEC = $(SERVER_BUILD_DIR)/server_app.exe
+
+# Targets
+.PHONY: all clean
+
+all: $(CLIENT_BUILD_DIR) $(SERVER_BUILD_DIR) $(CLIENT_EXEC) $(SERVER_EXEC)
+
+# Create the build directories if they don't exist
+$(CLIENT_BUILD_DIR):
+	mkdir -p $(CLIENT_BUILD_DIR)
+
+$(SERVER_BUILD_DIR):
+	mkdir -p $(SERVER_BUILD_DIR)
+
+# Compile client executable
+$(CLIENT_EXEC): $(CLIENT_OBJS)
+	$(CC) $(CFLAGS) $(CLIENT_INCS) -o $@ $(CLIENT_OBJS)
+
+# Compile server executable
+$(SERVER_EXEC): $(SERVER_OBJS)
+	$(CC) $(CFLAGS) $(SERVER_INCS) -o $@ $(SERVER_OBJS)
+
+# Compile object files, placing them in respective build subdirectories
+$(CLIENT_BUILD_DIR)/%.o: $(CLIENT_DIR)/src/%.c
+	$(CC) $(CFLAGS) $(CLIENT_INCS) -c $< -o $@
+
+$(SERVER_BUILD_DIR)/%.o: $(SERVER_DIR)/src/%.c
+	$(CC) $(CFLAGS) $(SERVER_INCS) -c $< -o $@
+
+# Clean up object files and executables
+clean:
+	rm -rf $(BUILD_DIR)/* $(CLIENT_EXEC) $(SERVER_EXEC)
