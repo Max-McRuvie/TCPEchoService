@@ -2,6 +2,9 @@
 CC = gcc
 CFLAGS = -Wall -g
 
+# Linker flags to include the Winsock library on Windows
+LDFLAGS = -lws2_32
+
 # Directories
 BUILD_DIR = build
 CLIENT_DIR = client
@@ -40,11 +43,11 @@ $(SERVER_BUILD_DIR):
 
 # Compile client executable
 $(CLIENT_EXEC): $(CLIENT_OBJS)
-	$(CC) $(CFLAGS) $(CLIENT_INCS) -o $@ $(CLIENT_OBJS)
+	$(CC) $(CFLAGS) $(CLIENT_INCS) -o $@ $(CLIENT_OBJS) $(LDFLAGS)
 
 # Compile server executable
 $(SERVER_EXEC): $(SERVER_OBJS)
-	$(CC) $(CFLAGS) $(SERVER_INCS) -o $@ $(SERVER_OBJS)
+	$(CC) $(CFLAGS) $(SERVER_INCS) -o $@ $(SERVER_OBJS) $(LDFLAGS)
 
 # Compile object files, placing them in respective build subdirectories
 $(CLIENT_BUILD_DIR)/%.o: $(CLIENT_DIR)/src/%.c
